@@ -10,15 +10,14 @@ export class DeviceFlow implements IAuthStrategy {
   async authorize(
     authUrl: URL,
     credentials: IAuthCredentials,
+    userAgent: string,
   ): Promise<IAllegroTokens> {
     const { clientId, clientSecret } = credentials;
     const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
       "base64",
     );
-
-    // KROK 1: Pobranie device_code
-    console.log(`[DeviceFlow] Requesting device code from ${authUrl}/device`);
-
+    // Pobieranie deviceCode
+    console.log(authUrl);
     const deviceResponse = await fetch(
       `${authUrl}/device?client_id=${clientId}`,
       {
@@ -26,6 +25,7 @@ export class DeviceFlow implements IAuthStrategy {
         headers: {
           Authorization: `Basic ${basicAuth}`,
           "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": userAgent,
         },
       },
     );
@@ -51,9 +51,6 @@ export class DeviceFlow implements IAuthStrategy {
     // KROK 2: Polling (odpytywanie o token)
     return new Promise((resolve, reject) => {
       const intervalMs = deviceData.interval * 1000;
-      console.log(
-        `[DeviceFlow] Starting polling for token every ${deviceData.interval}s...`,
-      );
 
       const poll = setInterval(async () => {
         try {
@@ -62,6 +59,7 @@ export class DeviceFlow implements IAuthStrategy {
             headers: {
               Authorization: `Basic ${basicAuth}`,
               "Content-Type": "application/x-www-form-urlencoded",
+              "User-Agent": userAgent,
             },
             body: new URLSearchParams({
               grant_type: "urn:ietf:params:oauth:grant-type:device_code",
@@ -72,7 +70,6 @@ export class DeviceFlow implements IAuthStrategy {
           const data = (await tokenResponse.json()) as IAllegroTokensResponse;
 
           if (tokenResponse.ok) {
-            console.log(`[DeviceFlow] Access token successfully acquired!`);
             clearInterval(poll);
 
             resolve({
@@ -89,7 +86,7 @@ export class DeviceFlow implements IAuthStrategy {
               clearInterval(poll);
               reject(new Error("Niepoprawny, wygasły lub zużyty device_code."));
             }
-            // Inne błędy (np. authorization_pending) ignorujemy i czekamy dalej
+            // Inne błędy (np. authorization_pending) ignorować i czekać dalej
           }
         } catch (err) {
           console.error(`[DeviceFlow] Polling error:`, err);

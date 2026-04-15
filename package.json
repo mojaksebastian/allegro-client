@@ -1,6 +1,6 @@
 {
   "name": "@mojaksebastian/allegro-client",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Klient Allegro REST API z automatycznym odświeżaniem tokenów. Pobiera tokeny z Allegro i udostępnia je użytkownikowi. Obsługuje zarówno środowisko produkcyjne, jak i sandbox.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,9 +20,6 @@
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "test": "node dist/test.js",
-    "start": "node dist/server.js",
-    "dev": "node --loader ts-node/esm src/server.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -34,7 +31,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.4.0"
   }
 }

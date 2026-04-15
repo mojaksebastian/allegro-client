@@ -5,6 +5,7 @@ import type {
   IAuthConfig,
 } from "./types.js";
 import { refresh } from "./helpers/refreshTokens.js";
+import { IUserAgent } from "../client/types.js";
 
 export class AllegroAuth implements IAuthConfig {
   private readonly tokenUrl: URL;
@@ -15,15 +16,17 @@ export class AllegroAuth implements IAuthConfig {
     private strategy: IAuthStrategy,
     private storage: ITokenStorage,
     private credentials: IAuthCredentials,
+    private userAgent: string,
   ) {
-    this.authUrl = new URL("/auth/oauth/device", this.baseUrl);
-    this.tokenUrl = new URL("/auth/oauth/token", this.baseUrl);
+    this.authUrl = new URL("/auth/oauth", this.baseUrl);
+    this.tokenUrl = new URL("/token", this.authUrl);
   }
 
   async authorize(): Promise<string> {
     const tokens = await this.strategy.authorize(
       this.authUrl,
       this.credentials,
+      this.userAgent,
     );
     await this.storage.save(tokens);
     return tokens.accessToken;
@@ -62,7 +65,7 @@ export class AllegroAuth implements IAuthConfig {
     return tokens.accessToken;
   }
 
-  async clearToken(): Promise<void> {
+  async clearTokens(): Promise<void> {
     await this.storage.clear();
   }
 }

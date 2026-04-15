@@ -31,7 +31,12 @@ const config = {
     clientId: process.env.ALLEGRO_CLIENT_ID,
     clientSecret: process.env.ALLEGRO_CLIENT_SECRET,
   },
-  strategy: "DeviceFlow",
+  userAgent: { // NAGŁÓWEK USER AGENT WYMAGANY PRZEZ ALLEGRO DO KOŃCA CZERWCA 2026 !!!
+    name: "AllegroClient", // nazwa aplikacji
+    version: "1.0.0", // wersja (w formie x.x.x / x.x / x)
+    url: "https://github.com/mojaksebastian/allegro-client", // należy podać URL do strony projektu
+  }
+  strategy: "DeviceFlow", // Na razie tylko DeviceFlow
   env: "sandbox", // Opcje: "production" | "sandbox"
 };
 
@@ -95,24 +100,26 @@ const allegro = new AllegroClient({
 ### Interfejs konfiguracji (IAllegroClientConfig)
 
 | Właściwość    | Typ                         | Wymagane | Opis                                                                   |
-| :------------ | :-------------------------- | :------: | :--------------------------------------------------------------------- |
-| `credentials` | `IAuthCredentials`          |   Tak    | Obiekt zawierający `clientId` oraz `clientSecret`.                     |
-| `strategy`    | `TStrategy`                 |   Tak    | Wybrana strategia autoryzacji (np. `"DeviceFlow"`).                    |
-| `env`         | `"production" \| "sandbox"` |   Nie    | Środowisko Allegro (Domyślnie: `"production"`).                        |
-| `storage`     | `ITokenStorage`             |   Nie    | Instancja klasy zarządzającej zapisem (Domyślnie: `FileTokenStorage`). |
+| :------------ | :-------------------------- | :------- | :--------------------------------------------------------------------- |
+| `credentials` | `IAuthCredentials`          | Tak      | Obiekt zawierający `clientId` oraz `clientSecret`.                     |
+| `userAgent`   | `IUserAgent`                | Tak      | Obiekt z metadanymi aplikacji (wymagany nagłówek User-Agent).          |
+| `strategy`    | `TStrategy`                 | Tak      | Wybrana strategia autoryzacji (np. `"DeviceFlow"`).                    |
+| `env`         | `"production" \| "sandbox"` | Nie      | Środowisko Allegro (Domyślnie: `"production"`).                        |
+| `storage`     | `ITokenStorage`             | Nie      | Instancja klasy zarządzającej zapisem (Domyślnie: `FileTokenStorage`). |
 
 ### Metody klasy AllegroClient
 
-* **getAccessToken(): Promise<string>** – Zwraca aktywny token dostępowy. Jeśli token wygasł lub nie istnieje, inicjuje proces odświeżania lub autoryzacji.
+- **getAccessToken(): Promise<string>** – Zwraca aktywny token dostępowy. Jeśli token wygasł lub nie istnieje, inicjuje proces odświeżania lub autoryzacji.
 
-* **clearSession(): Promise<void>** – Usuwa dane sesyjne z przypisanego magazynu.
+- **clearTokens(): Promise<void>** – Usuwa token zapisany w pamięci klienta.
+
+- **send(path: string, options: RequestInit): Promise<void>** – Metoda pomocnicza do wysyłania żądań HTTP do API Allegro. Automatycznie uwzględnia nagłówki Authorization oraz User-Agent.
 
 ## Rozwój projektu
 
 Biblioteka wymaga Node.js w wersji 20.x lub wyższej.
 
 ```bash
-
 # Kompilacja kodu źródłowego (TypeScript -> JavaScript)
 npm run build
 

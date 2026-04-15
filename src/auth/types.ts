@@ -1,3 +1,5 @@
+import { IUserAgent } from "../client/types.js";
+
 /**
  * Authentication Strategies
  */
@@ -52,12 +54,13 @@ export interface IAuthStrategy {
   authorize(
     authUrl: URL,
     credentials: IAuthCredentials,
+    userAgent: string,
   ): Promise<IAllegroTokens>;
 }
 
 export interface IAuthConfig {
   getToken(): Promise<string>;
-  clearToken(): Promise<void>;
+  clearTokens(): Promise<void>;
 }
 
 export interface IRefreshTokensParameters {

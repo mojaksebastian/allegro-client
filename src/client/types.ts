@@ -9,12 +9,21 @@ import type {
  */
 export type TEnv = "production" | "sandbox";
 
-export type TVersion = `${number}.${number}.${number}` | `${number}.${number}` | number;
+export type TVersion =
+  | `${number}.${number}.${number}`
+  | `${number}.${number}`
+  | number;
 
 export interface IUserAgent {
   name: string;
   version: TVersion;
   url: `http://${string}` | `https://${string}` | URL;
+}
+
+export interface IAllegroClient {
+  getAccessToken(): Promise<string>;
+  clearTokens(): Promise<void>;
+  send<T>(path: string, options?: RequestInit): Promise<T>;
 }
 
 export interface IAllegroClientConfig {

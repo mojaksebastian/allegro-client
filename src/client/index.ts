@@ -1,12 +1,12 @@
 import { AllegroAuth } from "../auth/index.js";
 import { DeviceFlow } from "../auth/strategies/DeviceFlow.js";
 import { FileTokenStorage } from "../auth/helpers/TokenStorage.js";
-import { IAllegroClientConfig } from "./types.js";
+import { IAllegroClient, IAllegroClientConfig } from "./types.js";
 
 const baseUrl = new URL("https://allegro.pl");
 const devBaseUrl = new URL("https://allegro.pl.allegrosandbox.pl");
 
-export class AllegroClient {
+export class AllegroClient implements IAllegroClient {
   private auth: AllegroAuth;
   private baseUrl: URL;
   private userAgent: string;
@@ -44,6 +44,7 @@ export class AllegroClient {
       strategyInstance,
       tokenStorage,
       credentials,
+      this.userAgent,
     );
   }
 
@@ -55,6 +56,21 @@ export class AllegroClient {
     return await this.auth.getToken();
   }
 
+  /**
+   * Usuwa zapisane tokeny z magazynu (wylogowanie).
+   */
+  async clearTokens(): Promise<void> {
+    await this.auth.clearTokens();
+  }
+
+  /**
+   * Wykonuje autoryzowane zapytanie do API Allegro.
+   * Automatycznie dołącza token Bearer oraz User-Agent.
+   * 
+   * @param path Ścieżka endpointu (np. '/sale/offers')
+   * @param options Opcje fetch (metoda, body, dodatkowe nagłówki)
+   * @returns Sparsowany wynik typu T
+   */
   async send<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = await this.getAccessToken();
     const url = new URL(path, this.baseUrl);
