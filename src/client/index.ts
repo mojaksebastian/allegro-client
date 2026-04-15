@@ -11,6 +11,8 @@ export class AllegroClient implements IAllegroClient {
   private baseUrl: URL;
   private userAgent: string;
 
+  private apiUrl: URL;
+
   constructor(config: IAllegroClientConfig) {
     console.log("Inicjalizacja AllegroClient...");
     const {
@@ -24,13 +26,13 @@ export class AllegroClient implements IAllegroClient {
     this.baseUrl = env === "sandbox" ? devBaseUrl : baseUrl;
     this.userAgent = `${userAgent.name}/${userAgent.version} (+${userAgent.url})`;
 
+    this.apiUrl = new URL(this.baseUrl.toString().replace("://", "://api."));
+
     // Inicjalizacja Storage (wbudowany/użytkownika)
     const tokenStorage =
       storage ?? new FileTokenStorage(env, credentials.clientId);
 
     // Wybór strategii
-    console.log("Strategia autoryzacji: " + strategy);
-
     let strategyInstance;
     switch (strategy) {
       case "DeviceFlow":
@@ -66,20 +68,22 @@ export class AllegroClient implements IAllegroClient {
   /**
    * Wykonuje autoryzowane zapytanie do API Allegro.
    * Automatycznie dołącza token Bearer oraz User-Agent.
-   * 
+   *
    * @param path Ścieżka endpointu (np. '/sale/offers')
    * @param options Opcje fetch (metoda, body, dodatkowe nagłówki)
    * @returns Sparsowany wynik typu T
    */
   async send<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = await this.getAccessToken();
-    const url = new URL(path, this.baseUrl);
+    const url = new URL(path, this.apiUrl);
 
     const response = await fetch(url.toString(), {
       ...options,
       headers: {
         ...options.headers,
         Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.allegro.public.v1+json",
+        "Content-Type": "application/vnd.allegro.public.v1+json",
         "User-Agent": this.userAgent,
       },
     });

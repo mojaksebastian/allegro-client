@@ -99,13 +99,13 @@ const allegro = new AllegroClient({
 
 ### Interfejs konfiguracji (IAllegroClientConfig)
 
-| Właściwość    | Typ                         | Wymagane | Opis                                                                   |
-| :------------ | :-------------------------- | :------- | :--------------------------------------------------------------------- |
-| `credentials` | `IAuthCredentials`          | Tak      | Obiekt zawierający `clientId` oraz `clientSecret`.                     |
-| `userAgent`   | `IUserAgent`                | Tak      | Obiekt z metadanymi aplikacji (wymagany nagłówek User-Agent).          |
-| `strategy`    | `TStrategy`                 | Tak      | Wybrana strategia autoryzacji (np. `"DeviceFlow"`).                    |
-| `env`         | `"production" \| "sandbox"` | Nie      | Środowisko Allegro (Domyślnie: `"production"`).                        |
-| `storage`     | `ITokenStorage`             | Nie      | Instancja klasy zarządzającej zapisem (Domyślnie: `FileTokenStorage`). |
+| Właściwość    | Typ                | Wymagane | Opis                                                                   |
+| :------------ | :----------------- | :------- | :--------------------------------------------------------------------- |
+| `credentials` | `IAuthCredentials` | Tak      | Obiekt zawierający `clientId` oraz `clientSecret`.                     |
+| `userAgent`   | `IUserAgent`       | Tak      | Obiekt z metadanymi aplikacji (wymagany nagłówek User-Agent).          |
+| `strategy`    | `TStrategy`        | Tak      | Wybrana strategia autoryzacji (np. `"DeviceFlow"`).                    |
+| `env`         | `TEnv`             | Nie      | Środowisko Allegro (Domyślnie: `"production"`).                        |
+| `storage`     | `ITokenStorage`    | Nie      | Instancja klasy zarządzającej zapisem (Domyślnie: `FileTokenStorage`). |
 
 ### Metody klasy AllegroClient
 

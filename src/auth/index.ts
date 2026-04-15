@@ -5,7 +5,6 @@ import type {
   IAuthConfig,
 } from "./types.js";
 import { refresh } from "./helpers/refreshTokens.js";
-import { IUserAgent } from "../client/types.js";
 
 export class AllegroAuth implements IAuthConfig {
   private readonly tokenUrl: URL;

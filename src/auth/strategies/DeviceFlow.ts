@@ -17,7 +17,6 @@ export class DeviceFlow implements IAuthStrategy {
       "base64",
     );
     // Pobieranie deviceCode
-    console.log(authUrl);
     const deviceResponse = await fetch(
       `${authUrl}/device?client_id=${clientId}`,
       {
@@ -49,6 +48,8 @@ export class DeviceFlow implements IAuthStrategy {
     console.log("---------------------------\n");
 
     // KROK 2: Polling (odpytywanie o token)
+    console.log("[DeviceFlow] Polling for tokens...");
+
     return new Promise((resolve, reject) => {
       const intervalMs = deviceData.interval * 1000;
 
@@ -71,6 +72,7 @@ export class DeviceFlow implements IAuthStrategy {
 
           if (tokenResponse.ok) {
             clearInterval(poll);
+            console.log("[DeviceFlow] Successfully retrieved tokens.");
 
             resolve({
               accessToken: data.access_token,
